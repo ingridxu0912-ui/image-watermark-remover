@@ -116,26 +116,29 @@ function loadOpenCV() {
   loadingOverlay.style.display = 'flex';
   loadingText.textContent = '正在加载 OpenCV...';
   
+  // 如果已经加载好了
+  if (window.cv && window.cv.imread) {
+    cv = window.cv;
+    opencvLoaded = true;
+    loadingOverlay.classList.add('hidden');
+    loadingOverlay.style.display = 'none';
+    processBtn.disabled = false;
+    return;
+  }
+  
   const script = document.createElement('script');
   script.src = 'https://docs.opencv.org/4.8.0/opencv.js';
-  script.onload = () => {
-    if (window.cv) {
-      window.cv.onRuntimeInitialized = () => {
-        cv = window.cv;
-        opencvLoaded = true;
-        loadingOverlay.classList.add('hidden');
-        loadingOverlay.style.display = 'none';
-        processBtn.disabled = false;
-      };
-    } else {
-      // 如果已经初始化完成
-      cv = window.cv;
-      opencvLoaded = true;
-      loadingOverlay.classList.add('hidden');
-      loadingOverlay.style.display = 'none';
-      processBtn.disabled = false;
-    }
+  
+  // OpenCV 会调用这个回调当加载完成
+  window.cv = window.cv || {};
+  window.cv.onRuntimeInitialized = () => {
+    cv = window.cv;
+    opencvLoaded = true;
+    loadingOverlay.classList.add('hidden');
+    loadingOverlay.style.display = 'none';
+    processBtn.disabled = false;
   };
+  
   script.onerror = () => {
     loadingText.textContent = '加载失败，请刷新页面重试';
   };
