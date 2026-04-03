@@ -127,7 +127,8 @@ function loadOpenCV() {
   }
   
   const script = document.createElement('script');
-  script.src = 'https://docs.opencv.org/4.8.0/opencv.js';
+  // 使用 jsDelivr CDN，速度更快
+  script.src = 'https://cdn.jsdelivr.net/npm/opencv.js@1.2.1/opencv.min.js';
   
   // OpenCV 会调用这个回调当加载完成
   window.cv = window.cv || {};
@@ -142,6 +143,14 @@ function loadOpenCV() {
   script.onerror = () => {
     loadingText.textContent = '加载失败，请刷新页面重试';
   };
+  
+  // 30 秒超时
+  setTimeout(() => {
+    if (!opencvLoaded) {
+      loadingText.textContent = '加载超时，请刷新页面重试';
+    }
+  }, 30000);
+  
   document.body.appendChild(script);
 }
 
