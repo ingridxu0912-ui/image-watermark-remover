@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片去水印工具 - 纯前端本地处理</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="container mx-auto px-4 py-6 max-w-7xl">
+    <!-- Header -->
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">🖼️ 图片去水印工具</h1>
+      <p class="text-gray-600">纯前端本地处理，图片不上传服务器，保护隐私</p>
+    </header>
+
+    <div class="grid grid-cols-12 gap-6">
+      <!-- Sidebar - Tools -->
+      <div class="col-span-12 md:col-span-3 bg-white rounded-lg shadow p-4 h-fit">
+        <div class="mb-4">
+          <h2 class="text-lg font-semibold mb-3 text-gray-700">标记工具</h2>
+          <div class="space-y-2">
+            <label class="flex items-center p-2 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+              <input type="radio" name="tool" value="rect" checked class="mr-2 tool-radio">
+              <span>□ 矩形框选</span>
+            </label>
+            <label class="flex items-center p-2 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+              <input type="radio" name="tool" value="brush" class="mr-2 tool-radio">
+              <span>✏️ 画笔涂抹</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-4" id="brushSizeContainer" style="display: none;">
+          <h2 class="text-lg font-semibold mb-3 text-gray-700">画笔大小</h2>
+          <input type="range" id="brushSize" min="5" max="50" value="15" class="w-full">
+          <div class="text-center text-sm text-gray-500 mt-1"><span id="brushSizeValue">15</span>px</div>
+        </div>
+
+        <div class="mb-4 space-y-2">
+          <button id="undoBtn" class="w-full py-2 px-4 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors disabled:opacity-50">
+            ↶ 撤销上一步
+          </button>
+          <button id="clearBtn" class="w-full py-2 px-4 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors disabled:opacity-50">
+            🗑️ 清空标记
+          </button>
+        </div>
+
+        <div class="mb-4">
+          <button id="processBtn" class="w-full py-3 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:bg-blue-400">
+            🚀 开始处理
+          </button>
+        </div>
+
+        <div id="downloadContainer" style="display: none;">
+          <a id="downloadBtn" class="block w-full py-3 px-4 bg-green-600 text-white text-center rounded hover:bg-green-700 transition-colors">
+            📥 下载处理后的图片
+          </a>
+        </div>
+
+        <div class="mt-6 p-3 bg-blue-50 rounded text-sm text-blue-800">
+          <p class="font-semibold">操作提示：</p>
+          <ul class="list-disc list-inside mt-1 space-y-1">
+            <li>拖拽或点击上传图片</li>
+            <li>框选或涂抹标记水印区域</li>
+            <li>点击处理等待完成</li>
+            <li>下载结果图片</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Main - Canvas Area -->
+      <div class="col-span-12 md:col-span-9">
+        <div class="bg-white rounded-lg shadow p-4 min-h-[500px]">
+          <!-- Upload Area -->
+          <div id="uploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-blue-400 transition-colors">
+            <div class="text-gray-400">
+              <p class="text-4xl mb-4">🖼️</p>
+              <p class="text-lg">点击或拖拽上传图片</p>
+              <p class="text-sm mt-2">支持 JPG、PNG、WebP 格式</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" class="hidden">
+          </div>
+
+          <!-- Canvas Container -->
+          <div id="canvasContainer" class="relative overflow-auto" style="display: none;">
+            <canvas id="canvas"></canvas>
+            <div id="loadingOverlay" class="absolute inset-0 bg-white/80 items-center justify-center hidden">
+              <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p class="text-gray-600" id="loadingText">正在加载 OpenCV...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+      <p>所有图片处理都在本地浏览器完成，图片不会上传到任何服务器</p>
+    </footer>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
