@@ -112,18 +112,29 @@ function loadImage(file) {
 
 // 加载 OpenCV.js
 function loadOpenCV() {
+  loadingOverlay.classList.remove('hidden');
   loadingOverlay.style.display = 'flex';
   loadingText.textContent = '正在加载 OpenCV...';
   
   const script = document.createElement('script');
   script.src = 'https://docs.opencv.org/4.8.0/opencv.js';
   script.onload = () => {
-    window.cv.onRuntimeInitialized = () => {
+    if (window.cv) {
+      window.cv.onRuntimeInitialized = () => {
+        cv = window.cv;
+        opencvLoaded = true;
+        loadingOverlay.classList.add('hidden');
+        loadingOverlay.style.display = 'none';
+        processBtn.disabled = false;
+      };
+    } else {
+      // 如果已经初始化完成
       cv = window.cv;
       opencvLoaded = true;
+      loadingOverlay.classList.add('hidden');
       loadingOverlay.style.display = 'none';
       processBtn.disabled = false;
-    };
+    }
   };
   script.onerror = () => {
     loadingText.textContent = '加载失败，请刷新页面重试';
@@ -260,6 +271,7 @@ function isMaskEmpty() {
 processBtn.addEventListener('click', () => {
   if (!opencvLoaded || !maskCtx) return;
   
+  loadingOverlay.classList.remove('hidden');
   loadingOverlay.style.display = 'flex';
   loadingText.textContent = '正在去除水印...';
   
@@ -297,11 +309,13 @@ function processImage() {
     // 准备下载
     prepareDownload();
     
+    loadingOverlay.classList.add('hidden');
     loadingOverlay.style.display = 'none';
   } catch (error) {
     console.error(error);
     loadingText.textContent = '处理失败: ' + error.message;
     setTimeout(() => {
+      loadingOverlay.classList.add('hidden');
       loadingOverlay.style.display = 'none';
     }, 3000);
   }
